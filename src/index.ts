@@ -1,53 +1,36 @@
-/**========================================================================
- *                           Libraries
- *========================================================================**/
-import {NBError} from '@basaldev/blocks-backend-sdk';
-import {
-  UserDefaultAdapter,
-  UserDefaultAdapterDependencies,
-  UserDefaultAdapterOptions,
-} from '@basaldev/blocks-user-service';
-import {parseISO, differenceInYears, isBefore, add} from 'date-fns';
+import * as sdk from "@basaldev/blocks-backend-sdk";
+import { defaultAdapter } from "@basaldev/blocks-user-service";
+import { isAdult } from "./utils";
 
-function isAdult(birthdateString: string) {
-  const birthdate = parseISO(birthdateString);
-  let age = differenceInYears(new Date(), birthdate);
-  const isBirthdayThisYearPassed = !isBefore(
-    add(birthdate, {years: age}),
-    new Date()
-  );
-  if (!isBirthdayThisYearPassed) {
-    age--;
-  }
+/**
+ * A hook function called after the adapter is created
+ * This hook can be used to customize the adapter instance
+ * 
+ * @param {defaultAdapter.UserDefaultAdapter} adapter Default adapter instance
+ * @returns {defaultAdapter.UserDefaultAdapter} Updated adapter instance
+ */
+export function adapterCreated(adapter: defaultAdapter.UserDefaultAdapter): defaultAdapter.UserDefaultAdapter {
+  const ageOfMajority = process.env.ADAPTER_CUSTOM_AGE_OF_MAJORITY
+    ? parseInt(process.env.ADAPTER_CUSTOM_AGE_OF_MAJORITY)
+    : 18;
 
-  if (age >= 18) {
-    return true;
-  }
-  return false;
-}
+  /**
+   * Customize validators for createUser handler
+   * https://docs.nodeblocks.dev/docs/how-tos/customization/customizing-adapters#customizing-handlers-and-validators-for-an-existing-endpoint
+   */
+  const updatedAdapter = sdk.adapter.setValidator(adapter, 'createUser', 'ageValidator', async (logger, context) => {
+    logger.info('ageValidator');
+    const birthday = context.body.customFields?.birthday;
+    if (!birthday || !isAdult(birthday, ageOfMajority)) {
+      logger.warn('ageValidator: birthday is undefined or not adult.');
+      throw new sdk.NBError({
+        code: 'ageValidator',
+        httpCode: 400,
+        message: `your age is under ${ageOfMajority}, according to your birthday: ${birthday}`,
+      });
+    }
+    return 200;
+  });
 
-export class CustomUserDefaultAdapter extends UserDefaultAdapter {
-  constructor(
-    options: UserDefaultAdapterOptions,
-    dependencies: UserDefaultAdapterDependencies
-  ) {
-    super(options, dependencies);
-    this.createUser = {
-      handler: super.createUser.handler,
-      validators: {
-        ...super.createUser.validators,
-        ageValidator: async (logger, context): Promise<number> => {
-          const {birthday} = context.body.customFields;
-          if (!birthday || !isAdult(birthday)) {
-            throw new NBError({
-              code: 'ageValidator',
-              httpCode: 400,
-              message: `your age is under 18, according to your birthday: ${birthday}`,
-            });
-          }
-          return 200;
-        },
-      },
-    };
-  }
+  return updatedAdapter;
 }

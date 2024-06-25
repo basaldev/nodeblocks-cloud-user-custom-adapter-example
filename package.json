@@ -1,42 +1,22 @@
 {
-  "name": "custom-service-template",
-  "version": "1.0.2",
-  "description": "a template for creating custom services in nodeblock cloud service",
-  "main": "index.js",
+  "name": "nodeblocks-cloud-user-custom-adapter-example",
+  "version": "2.0.0",
+  "description": "Nodeblocks User Service Custom Adapter Example",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "dotenv node dist/index.js",
-    "start": "node dist/index.js",
-    "lint": "gts lint",
-    "clean": "gts clean",
+    "clean": "rm -rf dist",
     "build": "tsc",
-    "fix": "gts fix",
-    "prepare": "npm run build",
-    "pretest": "npm run build",
-    "posttest": "npm run lint"
+    "start": "nbc adapter start",
+    "dev": "nbc adapter dev -i dist -e tsc"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/basaldev/custom-service-template.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/basaldev/custom-service-template/issues"
-  },
-  "homepage": "https://github.com/basaldev/custom-service-template#readme",
+  "author": "Basal Inc.",
+  "license": "UNLICENSED",
   "dependencies": {
-    "@basaldev/blocks-backend-sdk": "^1.0.0-alpha.29",
-    "@basaldev/blocks-user-service": "^1.0.0-alpha.22",
-    "date-fns": "^2.30.0",
-    "express": "^4.18.1",
-    "got": "^12.0.4",
-    "ts-node": "^10.9.1"
+    "@basaldev/blocks-backend-sdk": "^2.9.0",
+    "@basaldev/blocks-user-service": "2.3.0"
   },
   "devDependencies": {
-    "@types/node": "^14.11.2",
-    "dotenv-cli": "^5.1.0",
-    "gts": "^3.1.1",
-    "typescript": "~4.7.0"
+    "@basaldev/nodeblocks-cloud-sdk": "^0.2.1",
+    "typescript": "^5.4.5"
   }
 }
