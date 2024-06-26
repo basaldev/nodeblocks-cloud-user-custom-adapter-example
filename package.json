@@ -16,7 +16,7 @@
     "@basaldev/blocks-user-service": "2.3.0"
   },
   "devDependencies": {
-    "@basaldev/nodeblocks-cloud-sdk": "^0.2.1",
+    "@basaldev/nodeblocks-cloud-sdk": "^0.2.2",
     "typescript": "^5.4.5"
   }
 }
