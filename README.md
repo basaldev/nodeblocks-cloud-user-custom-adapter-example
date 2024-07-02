@@ -7,7 +7,10 @@ All the templates are available in [this repository](https://github.com/basaldev
 
 ## Installation
 
+To install the packages, please get npm token from Basal team and set it into environment variable.
+
 ```bash
+export NPM_TOKEN=YOUR_NPM_TOKEN
 npm ci
 ```
 
