@@ -9,7 +9,7 @@
       "type": "number",
       "name": "ADAPTER_CUSTOM_AGE_OF_MAJORITY",
       "required": true,
-      "defaultValue": 18
+      "defaultValue": "18"
     }
   ]
 }
